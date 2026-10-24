@@ -12,7 +12,7 @@
 ## Структура проекта
 
 ```
-final_project/
+stepik_final_test/          # корень репозитория
 ├── __init__.py              # делает корень пакетом (относительные импорты)
 ├── conftest.py              # фикстура browser + опции --browser_name, --language
 ├── pytest.ini               # маркер need_review

@@ -1,1 +1,1 @@
-# final_project/pages/__init__.py
+# stepik_final_test/pages/__init__.py

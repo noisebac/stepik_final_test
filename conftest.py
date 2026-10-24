@@ -1,4 +1,4 @@
-# final_project/conftest.py
+# stepik_final_test/conftest.py
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
