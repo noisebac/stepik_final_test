@@ -64,6 +64,6 @@ pytest test_product_page.py -k offer0
 
 ## Ссылки на задания курса
 
-- 2.1–2.4 — задачи модуля 2: см. [`module2/`](../module2)
-- 3.6 — параметризация и фикстуры PyTest: см. [`3_6_10/`](../3_6_10)
+- [2.1–2.4 — задачи модуля 2 (module2/)](https://github.com/noisebac/autotests_selenium_py/tree/main/module2)
+- [3.6 — параметризация и фикстуры PyTest (3_6_10/)](https://github.com/noisebac/autotests_selenium_py/tree/main/3_6_10)
 - 4.1–4.3 — Page Object, отрицательные проверки, наследование, setup: этот проект
