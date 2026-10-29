@@ -1,9 +1,14 @@
 # https://stepik.org/lesson/199980 — пишем первые тесты с помощью Page Object
 # https://stepik.org/lesson/201964/step/12 — группировка тестов: setup (регистрация)
+import secrets
 import time
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 from .base_page import BasePage
-from .locators import LoginPageLocators
+from .locators import BasePageLocators, LoginPageLocators
 
 
 class LoginPage(BasePage):
@@ -27,9 +32,14 @@ class LoginPage(BasePage):
             "Форма регистрации не представлена"
 
     def register_new_user(self):
-        """Регистрирует нового пользователя со случайным email."""
-        email = str(time.time()) + "@fakemail.org"
-        password = "Qwerty123"
+        """Регистрирует нового пользователя со случайными email и паролем.
+
+        Пароль тоже делаем случайным: демо-сайт отклоняет типовые значения из
+        списка обычных паролей (например, "Qwerty123"), аккаунт не создаётся,
+        и тест падает в setup с «пользователь не авторизован».
+        """
+        email = f"{time.time()}@fakemail.org"
+        password = secrets.token_urlsafe(12)
         self.browser.find_element(
             *LoginPageLocators.REGISTRATION_EMAIL
         ).send_keys(email)
@@ -42,3 +52,20 @@ class LoginPage(BasePage):
         self.browser.find_element(
             *LoginPageLocators.REGISTRATION_BUTTON
         ).click()
+        # Явно ждём исхода регистрации. Если сайт отклонит данные, мы сразу
+        # увидим сообщение об ошибке вместо отвлечённого «иконки нет».
+        WebDriverWait(self.browser, 10).until(
+            EC.any_of(
+                EC.presence_of_element_located(BasePageLocators.USER_ICON),
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, "#register_form .alert-danger, .alert-danger")
+                ),
+            )
+        )
+        errors = self.browser.find_elements(
+            By.CSS_SELECTOR, "#register_form .alert-danger, .alert-danger"
+        )
+        if errors:
+            raise AssertionError(
+                "Регистрация отклонена сайтом: " + errors[0].text.strip()
+            )
