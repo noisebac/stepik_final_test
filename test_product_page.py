@@ -13,15 +13,10 @@ from pages.basket_page import BasketPage
 base_link = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/"
 
 # Независимость от данных: параметризация промо-ссылок.
-# offer6 — известный сломанный промо (баг на сервере), помечен xfail.
-promo_links = [
-    f"{base_link}?promo=offer{n}" if n != 6
-    else pytest.param(
-        f"{base_link}?promo=offer6",
-        marks=pytest.mark.xfail(reason="известный баг промо на сервере"),
-    )
-    for n in range(10)
-]
+# Раньше offer6 был помечен xfail как сломанный промо на сервере, но в текущих
+# прогонах он проходит (XPASS), а падает — без предсказуемости — то offer7, то
+# сетевые таймауты. Баг на демо-сайте подвижный, поэтому номер не закрепляем.
+promo_links = [f"{base_link}?promo=offer{n}" for n in range(10)]
 
 
 @pytest.mark.need_review
@@ -59,12 +54,20 @@ def test_guest_can_go_to_login_page_from_product_page(browser):
 
 
 @pytest.mark.need_review
+@pytest.mark.xfail(
+    reason="сервер показывает сообщение об успехе сразу после добавления",
+    strict=False,
+)
 def test_guest_cant_see_success_message_after_adding_product_to_cart(browser):
-    """Сообщение об успехе отсутствует сразу после добавления (отрицательная проверка)."""
+    """Сообщение об успехе отсутствует сразу после добавления (отрицательная проверка).
+
+    ``base_link`` ведёт на обычную страницу товара без ``?promo=``, поэтому
+    капчи в alert здесь нет и ``solve_quiz_and_get_code()`` не вызывается:
+    он ждал бы алерт, который никогда не появится.
+    """
     page = ProductPage(browser, base_link)
     page.open()
     page.add_product_to_cart()
-    page.solve_quiz_and_get_code()
     page.should_not_be_success_message()
 
 

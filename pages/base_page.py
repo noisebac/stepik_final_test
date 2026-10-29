@@ -1,4 +1,7 @@
 # https://stepik.org/lesson/201964/step/5 — отрицательные проверки
+import math
+
+from selenium.common.exceptions import NoAlertPresentException
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -17,6 +20,27 @@ class BasePage:
 
     def open(self):
         self.browser.get(self.url)
+
+    def solve_quiz_and_get_code(self):
+        """Решаем математическую капчу в alert и возвращаем код подтверждения."""
+        # Без явного ожидания switch_to.alert бросает NoAlertPresentException,
+        # если алерт появляется не мгновенно после клика.
+        WebDriverWait(self.browser, 10).until(EC.alert_is_present())
+        alert = self.browser.switch_to.alert
+        x = alert.text.split(" ")[2]
+        # float, а не int: значение в алерте может быть дробным.
+        answer = str(math.log(abs((12 * math.sin(float(x))))))
+        alert.send_keys(answer)
+        alert.accept()
+        try:
+            alert = self.browser.switch_to.alert
+            alert_text = alert.text
+            print(f"Your code: {alert_text}")
+            alert.accept()
+            return alert_text
+        except NoAlertPresentException:
+            print("No second alert")
+            return None
 
     def is_element_present(self, how, what):
         """Элемент присутствует на странице прямо сейчас."""
