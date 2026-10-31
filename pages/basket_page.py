@@ -6,6 +6,12 @@ from .locators import BasketPageLocators
 class BasketPage(BasePage):
     """Страница корзины."""
 
+    def should_be_empty_basket(self):
+        """Составная проверка: в корзине нет товаров и есть сообщение о пустоте."""
+        self.should_be_basket_page()
+        self.should_not_be_basket_items()
+        self.should_be_empty_basket_message()
+
     def should_be_basket_page(self):
         assert "basket" in self.browser.current_url, \
             f"URL не содержит 'basket': {self.browser.current_url}"

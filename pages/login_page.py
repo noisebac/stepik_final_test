@@ -69,3 +69,14 @@ class LoginPage(BasePage):
             raise AssertionError(
                 "Регистрация отклонена сайтом: " + errors[0].text.strip()
             )
+
+    def should_be_registration_success(self):
+        """Сайт подтвердил регистрацию сообщением «Thanks for registering!»."""
+        assert self.is_element_present(
+            *LoginPageLocators.REGISTRATION_SUCCESS_MESSAGE
+        ), "Сообщение об успешной регистрации не появилось"
+
+    def should_be_authorized_user(self):
+        """Составная проверка: регистрация подтверждена и пользователь вошёл."""
+        self.should_be_registration_success()
+        super().should_be_authorized_user()

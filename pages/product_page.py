@@ -18,6 +18,11 @@ class ProductPage(BasePage):
 
     # --- проверки успешного добавления в корзину ---
 
+    def should_be_product_added_to_basket(self):
+        """Составная проверка: имя товара и сумма корзины подтверждены."""
+        self.should_be_product_name_in_success_message()
+        self.should_be_basket_total()
+
     def should_be_product_name_in_success_message(self):
         """Имя товара в сообщении об успехе совпадает с именем на странице."""
         product_name = self.get_product_name()
